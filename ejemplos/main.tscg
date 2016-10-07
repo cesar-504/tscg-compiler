@@ -1,0 +1,4 @@
+var asd=234+4323
+if(123<asd)
+     print('hola')
+;;
