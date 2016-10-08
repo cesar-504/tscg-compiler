@@ -20,7 +20,7 @@ class Lexer
   end
 
   def next_token()
-    token=nil
+
       #puts @nline
       #puts @line
       if @line=="" or !@line
@@ -28,52 +28,53 @@ class Lexer
         @b=false
         @file.rewind
         @line = @file.readlines[@nline]
-      end 
+      end
       #puts @line
-     
+
       while @line && @line.length>0
         for expr in Expr.exprs
-          return token if token!=nil
+          #return token if token!=nil
           match = expr.regex.match(@line)
           if match
             case expr.name
             when 'espacio','comentario'#,'comentariob'
               @line=@line[match.end(0)..-1]
               return next_token
-           
+
             when 'opUnit','oprMat','oprComp','oprLog'
               @line=@line[match.end(0)..-1]
-              return expr.name+" "+match[0]
+              return Token(expr.name,match[0],match[0],@nline)
             when 'otro'
               @line=@line[match.end(0)..-1]
               puts "token desconocido: "+match[0]
               return nil
             when 'identificador'
               @line=@line[match.end(0)..-1]
-              
+
               for id in Expr.reserved
                 match2 = id.regex.match(match[0])
                 if match2
-                  return id.name
-                  
+                  return Token(id.name,match[0],match[0],@nline)
+
                 end
-              
+
               end
-              return expr.name+" "+match[0]
+              num=@simTable.add_d(match[0])
+              return Token(expr.name,num,match[0],nline)
             when 'numero'
               @line=@line[match.end(0)..-1]
-              return expr.name+" "+match[0]
+              return Token(expr.name,match[0],match[0],@nline)
             else
               @line=@line[match.end(0)..-1]
-             return expr.name+" "+match[0]
+             return Token(expr.name,match[0],match[0],@nline)
             end
 
           end
         end
-        
+        return nil
       end
-      
-      return token
+
+      return nil
 
 
   end
