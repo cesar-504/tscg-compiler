@@ -1,2 +1,2 @@
-class Token<Struct.new(:nombre , :atributo , :valor,:nlinea)
+class Token<Struct.new(:name , :attr , :val,:noLine,:noColumn)
 end

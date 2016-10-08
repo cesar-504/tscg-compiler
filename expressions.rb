@@ -9,6 +9,7 @@ class Expr
   @@exprs=[
     Expr.new('salto',/^\n/ ),
     Expr.new("espacio", /^\ +/ ),
+    Expr.new("identificador", /^[a-zA-Z_]\w*/ ),#150
     #Expr.new('agrupacion',/^[\\[\\]\\{\\}\\[\\]\\(\\)]/),
     Expr.new('corchIni', /^\[/ ),
     Expr.new('corchFin', /^\]/ ),
@@ -46,11 +47,11 @@ class Expr
     #Expr.new("numero", /^((\d+)?\.\d+)[eE][+-]?\d+\W/ ),
     Expr.new("numero", /^((\d+)?\.\d+)([eE][+-]?\d+)?/ ),
     Expr.new("numero", /^\d+/ ),
-   
+
     Expr.new("crear", /^~/ ),
 
-    Expr.new("identificador", /^[a-zA-Z_]\w*/ ),#150
-    
+
+
     Expr.new("otro", /[\s;,.!#%^*(){}\[\]+=<>\-]|@>/ ),
 
   ]
@@ -115,14 +116,25 @@ class Expr
     Expr.new("fns", /^fns$/ ),
     Expr.new("main", /^main$/ ),
   ]
-  
+
   def self.exprs
     @@exprs
   end
   def self.reserved
     @@reserved
   end
-
+  def self.search_reserved (idToken)
+    for expr in @@reserved
+        return expr if expr.regex.match(idToken)
+    end
+    return nil
+  end
+  def self.search_expr (idToken)
+    for expr in @@expr
+        return expr if expr.regex.match(idToken)
+    end
+    return nil
+  end
 
 
 

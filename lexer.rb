@@ -5,77 +5,65 @@ class Lexer
   #file.eof?
   #file.ungetc h
   #file.rewind
+  require_relative 'token'
+  require_relative 'sim-table'
+  require 'terminal-table'
 
   def initialize(file_url)
     @file_url =file_url
     @nline=0
-    @ncolumn=0
-    @b=true
-    #@file =File.open(file_url,"r")
-    @file =File.open("/home/cesar/Documentos/Proyectos/ruby/tscg-compiler/ejemplos/main.tscg", "r")
-  end
-
-  def first()
-    #code
+    @columnSum=1
+    @file =File.open(file_url, "r")
+    @sim_table=SimTable.new
   end
 
   def next_token()
+    if !@line or @line==""
+      @nline+=1
+      @file.rewind
+      @line = @file.readlines[@nline-1]
+      @columnSum=1
+    end
 
-      #puts @nline
-      #puts @line
-      if @line=="" or !@line
-        @nline+=1 if !@b
-        @b=false
-        @file.rewind
-        @line = @file.readlines[@nline]
-      end
-      #puts @line
-
-      while @line && @line.length>0
-        for expr in Expr.exprs
-          #return token if token!=nil
-          match = expr.regex.match(@line)
-          if match
-            case expr.name
-            when 'espacio','comentario'#,'comentariob'
-              @line=@line[match.end(0)..-1]
-              return next_token
-
-            when 'opUnit','oprMat','oprComp','oprLog'
-              @line=@line[match.end(0)..-1]
-              return Token(expr.name,match[0],match[0],@nline)
-            when 'otro'
-              @line=@line[match.end(0)..-1]
-              puts "token desconocido: "+match[0]
-              return nil
-            when 'identificador'
-              @line=@line[match.end(0)..-1]
-
-              for id in Expr.reserved
-                match2 = id.regex.match(match[0])
-                if match2
-                  return Token(id.name,match[0],match[0],@nline)
-
-                end
-
-              end
-              num=@simTable.add_d(match[0])
-              return Token(expr.name,num,match[0],nline)
-            when 'numero'
-              @line=@line[match.end(0)..-1]
-              return Token(expr.name,match[0],match[0],@nline)
-            else
-              @line=@line[match.end(0)..-1]
-             return Token(expr.name,match[0],match[0],@nline)
+    while @line && @line.length>0
+      for expr in Expr.exprs
+        if match= expr.regex.match(@line)
+          ncolumn=@columnSum
+          @line=@line[match.end(0)..-1]
+          @columnSum+=match.end(0)
+          case expr.name
+          when 'espacio','comentario'#,'comentariob'
+            return next_token
+            # when 'otro'
+            #   puts "token desconocido: "+match[0]
+            #   return nil
+          when 'identificador'
+            if (id = Expr.search_reserved match[0])
+              return Token.new(id.name,nil,match[0],@nline,ncolumn)
             end
-
+            num=@sim_table.add_id(match[0])
+            return Token.new(expr.name,num,match[0],@nline,ncolumn)
           end
+          return Token.new(expr.name,nil,match[0],@nline,ncolumn)
         end
-        return nil
       end
-
       return nil
+    end
+    return nil
+  end
 
-
+  def to_s
+    Terminal::Table.new do |t|
+      t<<['no','token','attr','val','noline','nocolumn']
+      t<<:separator
+      token=next_token
+      i=1
+      while token do
+        t<<[i,token.name,token.attr,token.val,token.noLine,token.noColumn]
+        token=next_token
+        i+=1
+      end
+      return t.to_s
+    end
   end
 end

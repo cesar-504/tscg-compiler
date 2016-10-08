@@ -2,12 +2,8 @@
 require_relative 'expressions'
 require_relative 'lexer'
 
-lex = Lexer.new("")
+lex = Lexer.new("/home/cesar/Documentos/Proyectos/ruby/tscg-compiler/ejemplos/main.tscg")
 
-token=lex.next_token
-while token!=nil
-  puts token
-  token=lex.next_token
-end
+puts lex
 
 puts "fin"

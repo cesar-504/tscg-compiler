@@ -1,4 +1,4 @@
-class simTable
+class SimTable
   def initialize()
     @sim_table=[]
   end
@@ -18,11 +18,11 @@ class simTable
     return nil
   end
   def add_id(id)
-    if !exist_in_table( id)
+    if !exist_in_table?( id)
       @sim_table.push id
       return @sim_table.count-1
-    else
-      return index_of id
     end
+    return index_of id
+
   end
 end
