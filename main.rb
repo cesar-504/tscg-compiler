@@ -1,9 +1,22 @@
 #main
 require_relative 'expressions'
 require_relative 'lexer'
+require_relative 'grammatics'
+require_relative 'syntactic'
+url="/home/cesar/Documentos/Proyectos/ruby/tscg-compiler/ejemplos/main.tscg"
+lex = Lexer.new(url)
 
-lex = Lexer.new("/home/cesar/Documentos/Proyectos/ruby/tscg-compiler/ejemplos/main.tscg")
-
+puts '///////////////////////////////////////////////////////////////////////////////'
 puts lex
 
-puts "fin"
+puts '///////////////////////////////////////////////////////////////////////////////'
+
+
+Gram.init
+Gram.print
+
+puts '///////////////////////////////////////////////////////////////////////////////'
+syn=Syntactic.new url
+
+puts syn.check_file
+puts

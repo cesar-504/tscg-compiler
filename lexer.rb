@@ -12,6 +12,7 @@ class Lexer
   def initialize(file_url)
     @file_url =file_url
     @nline=0
+
     @columnSum=1
     @file =File.open(file_url, "r")
     @sim_table=SimTable.new
@@ -52,18 +53,18 @@ class Lexer
     return nil
   end
 
-  def to_s
-    Terminal::Table.new do |t|
-      t<<['no','token','attr','val','noline','nocolumn']
-      t<<:separator
+def to_s
+  Terminal::Table.new do |t|
+    t<<['no','token','attr','val','noline','nocolumn']
+    t<<:separator
+    token=next_token
+    i=1
+    while token do
+      t<<[i,token.name,token.attr,token.val,token.noLine,token.noColumn]
       token=next_token
-      i=1
-      while token do
-        t<<[i,token.name,token.attr,token.val,token.noLine,token.noColumn]
-        token=next_token
-        i+=1
-      end
-      return t.to_s
+      i+=1
     end
+    return t.to_s
   end
+end
 end

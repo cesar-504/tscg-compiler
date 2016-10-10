@@ -130,7 +130,7 @@ class Expr
     return nil
   end
   def self.search_expr (idToken)
-    for expr in @@expr
+    for expr in @@exprs
         return expr if expr.regex.match(idToken)
     end
     return nil

@@ -23,7 +23,6 @@
 #   lib.print("entre 0 y 2"
 #programa
 #importacion
-
  gets :
   get libreria Nombre
   get  otralibreria
@@ -43,31 +42,24 @@
         ;;
      ;;
 ;;
-
 fns:
     fn funcion(var x1:num)->num:
         x1=34
-
     ;;
     fn funcion2(var x1:num)->num:
         x1=34
-
     ;;
 ;;
 main:
      var asd:num=0
      var asd2:text="ssdfsdf"
-
      #declarar variable
-
 def variable:int=123
 var variable2:string='texto 1'
 def varible3:int=34
-
 #asignacion
 variable=10
   #if
-
 if variable>variable3:
     asd=123
 ;;
@@ -93,7 +85,6 @@ cloop true:
 cloop true ->:
     #print('un ciclo do')
 ;;
-
 router variable:
     port 'asd','asd','asd':
         #print(variable)
@@ -109,13 +100,9 @@ signal evento ['unaFuncion','otraFuncion']
 #emitir evento
 emit evento
 array miArrar:num = [123,123,123]
-
 list lista:num=[123,123,123,123]
-
-
     # asd=345
     # if asd<123:
     #     asd=0
     # ;;
-
 ;;
