@@ -75,10 +75,10 @@ class Gram
             p=Production.new (gram.name)
             p.prodType= :gram
             @productions.push p
-          elsif (expr= Expr.search_expr (elem)) 
-            
+          elsif (expr= Expr.search_expr (elem))
+
             if expr.name=='identificador'
-               if (id=Expr.search_reserved (elem)) 
+               if (id=Expr.search_reserved (elem))
                  p=Production.new (elem)
                  p.prodType= :token
                  @productions.push p
@@ -194,26 +194,26 @@ class Gram
   @@gindex=0
   @@grams=[
     Gram.new( "archivo","defImportaciones? defroom? defclases? deffunciones? mainBloque"),
-    Gram.new( "defImportaciones","gets inicio salto importaciones? terminacion"),
+    Gram.new( "defImportaciones","gets inicio importaciones? terminacion"),
     Gram.new( "importaciones","importacion importaciones?"),
-    Gram.new( "importacion","importar (string|identificador) identificador? salto"),
-    Gram.new( "defroom","room identificador salto"),
-    Gram.new( "defclases","modules inicio salto clases? terminacion"),
+    Gram.new( "importacion","importar (string|identificador) identificador? pcoma"),
+    Gram.new( "defroom","room identificador pcoma"),
+    Gram.new( "defclases","modules inicio clases? terminacion"),
     Gram.new( "clases","clase clases?"),
-    Gram.new( "clase","modificadores? modulo identificador (parIni identificador parFin)? inicio salto instrucciones? constructor? instrucciones? destructor? instrucciones? terminacion"),
+    Gram.new( "clase","modificadores? modulo identificador (parIni identificador parFin)? inicio instrucciones? constructor? instrucciones? destructor? instrucciones? terminacion"),
     Gram.new( "constructor","make bloqueDec bloque"),
     Gram.new( "destructor","umake bloque"),
-    Gram.new( "deffunciones","fns inicio salto funciones? terminacion"),
+    Gram.new( "deffunciones","fns inicio funciones? terminacion"),
     Gram.new( "funciones","funcion funciones?"),
     Gram.new( "funcion","modificadores? decFn identificador bloqueDec  tipoRetorno tipoDato  bloque"),
     Gram.new( "bloqueDec","parIni declaraciones? parFin"),
     Gram.new( "mainBloque", "main  bloque"),
-    Gram.new( "sbloque", "inicio salto instrucciones? salto"),#/provicional
-    Gram.new( "bloque", "inicio salto instrucciones? terminacion  "),
+    Gram.new( "sbloque", "inicio instrucciones? pcoma"),#/provicional
+    Gram.new( "bloque", "inicio instrucciones? terminacion  "),
 
-    Gram.new( "prueba","inicio terminacion? salto"),
+    Gram.new( "prueba","inicio terminacion? pcoma"),
     Gram.new( "prueba2"," prueba? inicio"),
-    Gram.new( "prueba3","terminacion (salto|terminacion)"),
+    Gram.new( "prueba3","terminacion (pcoma|terminacion)"),
 
 
     Gram.new( "modificadores","modificador modificadores?"),
@@ -234,11 +234,11 @@ class Gram
     Gram.new( "instrucciones","instruccion instrucciones?"),
     #  Gram.new( "sinstruccion","()"),#quite estructura
     Gram.new( "instruccionSimple","operacionUni|asignar"),#quite estructura
-    Gram.new( "instruccion","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList) salto"),
+    Gram.new( "instruccion","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList) pcoma"),
     Gram.new( "estructura","estPregunta|estLoop|estTloop|estCloop|estNor|estRouter"),#para prueba
     Gram.new( "declaracion","modificadores? definicion identificador inicio tipoDato opAsignacion?"),#para prueba
 
-    Gram.new( "llamadoFn","parIni parametros? parFin salto"),
+    Gram.new( "llamadoFn","parIni parametros? parFin pcoma"),
     Gram.new( "estRetorno","retorno (valor|operacines)?"),
     Gram.new( "operaciones","(operacionUni|operacion) (oprMatoperaciones)?"),
 
@@ -253,9 +253,9 @@ class Gram
     Gram.new( "estLoop","loop identificador in iterable bloque"),
     Gram.new( "iterable","identificador|estRango"),
     Gram.new( "estRango","valor rango valor"),
-    Gram.new( "estTloop","tloop declaraciones?  terminacionSimple condiciones? terminacionSimple instruccionSimple? bloque"),
+    Gram.new( "estTloop","tloop declaraciones?  pcoma condiciones? pcoma instruccionSimple? bloque"),
     Gram.new( "estCloop","cloop condiciones tipoRetorno? bloque"),
-    Gram.new( "estRouter","router valor inicio salto ports? estNotport salto? terminacion"),
+    Gram.new( "estRouter","router valor inicio ports? estNotport  terminacion"),
     Gram.new( "ports","estPort instrucciones? ports?"),
     Gram.new( "estPort","port ll bloque"),
     Gram.new( "ll","literal (separacion ll)?"),

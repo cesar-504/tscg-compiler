@@ -24,17 +24,17 @@
 #programa
 #importacion
  gets :
-  get libreria Nombre
-  get  otralibreria
+  get libreria Nombre;
+  get  otralibreria;
 ;;
 # # #room
- room Cuarto
+ room Cuarto;
  modules:
       mod UnaClase(clasePadre):
     #contructor
         make (var sdf:num =0):
-            asd=789
-            fksj=asd
+            asd=789;
+            fksj=asd;
         ;;
         #destructor
         umake:
@@ -44,63 +44,63 @@
 ;;
 fns:
     fn funcion(var x1:num)->num:
-        x1=34
+        x1=34;
     ;;
     fn funcion2(var x1:num)->num:
-        x1=34
+        x1=34;
     ;;
 ;;
 main:
-     var asd:num=0
-     var asd2:text="ssdfsdf"
-     #declarar variable
-def variable:int=123
-var variable2:string='texto 1'
-def varible3:int=34
+     var asd:num=0;
+     var asd2:text="ssdfsdf";
+     #declarar variable;
+def variable:int=123;
+var variable2:string='texto 1';
+def varible3:int=34;
 #asignacion
-variable=10
+variable=10;
   #if
 if variable>variable3:
-    asd=123
+    asd=123;
 ;;
 #else if
 ?: variable==variable3:
-asd=13
+asd=13;
 ;;
 #else
 nif:
-asd=543
+asd=543;
 ;;
 loop i in 1...10:
-    #print(i)
-    var f:num =678
+    #print(i);
+    var f:num =678;
 ;;
 tloop var i:num=0;i<10;i++:
-    #print(i)
-    next
+    #print(i);
+    next;
 ;;
 cloop true:
-    #print('un ciclo')
+    #print('un ciclo');
 ;;
 cloop true ->:
-    #print('un ciclo do')
+    #print('un ciclo do');
 ;;
 router variable:
     port 'asd','asd','asd':
-        #print(variable)
+        #print(variable);
         ;;
     port 123:
-        #print("numero")
+        #print("numero");
         ;;
     notport:
-        #print("otra cosa")
+        #print("otra cosa");
         ;;
 ;;
-signal evento ['unaFuncion','otraFuncion']
-#emitir evento
-emit evento
-array miArrar:num = [123,123,123]
-list lista:num=[123,123,123,123]
+signal evento ['unaFuncion','otraFuncion'];
+#emitir evento;
+emit evento;
+array miArrar:num = [123,123,123];
+list lista:num=[123,123,123,123];
     # asd=345
     # if asd<123:
     #     asd=0

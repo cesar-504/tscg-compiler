@@ -5,12 +5,12 @@ class GramResult
   #
   # Si se acepta una gramatica se regresa ok=true, si no se encontro ok=false, si hay error @error=Strig error
   #
-  attr_accessor :error,:ok,:init
+  attr_accessor :error,:ok,:init,:pass
   def initialize(args)
     @error = args[:error]
     @init = args[:init]
     @ok= args[:ok]
-
+    @pass=args[:pass]
   end
 
 end
@@ -73,7 +73,7 @@ class Syntactic
           if prod.optional
             puts 'token saltado: '+prod.name
             @stack.push currentToken
-            return GramResult.new(ok:true) 
+            return GramResult.new(ok:false,pass:true) 
           end
         #   if currentToken.name=="terminacion" 
         #       puts 'token saltado: '+prod.name
@@ -89,25 +89,48 @@ class Syntactic
 
     end
     @stack.push currentToken
-    return GramResult.new(error:true) 
+    return GramResult.new(ok:false,error:true) 
   end
 
   def check_gram (gram)
+    puts 'init=false'
     init=false
     puts "Gram: "+gram.name
-          for p in gram.productions
+    if gram.optionsGr?
+      for p in gram.productions
+        res= check_prod p
+        if res.ok
+          puts "gGram aceptada: "+gram.name
+          return GramResult.new(ok:true)  
+        end
+      end
+      puts "gGram rechazada: "+gram.name
+      return GramResult.new(error:true) 
+    else
+      
+        for p in gram.productions
+          
+          if @stack.last and @stack.last.name=='terminacion' and p.optional
+              @stack.pop
+              next
+          end
+
+          
             res= check_prod p
-            if gram.optionsGr? and res.ok
-                puts "gGram aceptada: "+gram.name
-                return GramResult.new(ok:true)  
-            elsif !gram.optionsGr? and !res.ok
-                puts "Gram rechazada: "+gram.name
-                return GramResult.new(error:true,init:init) 
+            if !res.ok and !res.pass
+              puts "Gram rechazada: "+gram.name
+              return GramResult.new(error:true,init:init) 
             end
             init=true
-          end
-          puts "Gram aceptada: "+gram.name
-        return GramResult.new(ok:true,init:init) 
+            puts 'init=true'
+          
+
+        end
+      
+       puts "Gram aceptada: "+gram.name
+       return GramResult.new(ok:true,init:init) 
+    end
+          
   end
 
   # def exec()
