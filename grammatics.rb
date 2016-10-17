@@ -1,16 +1,20 @@
 
 class Production
-  attr_accessor :name , :prodType,:optional
-  def initialize(name,optional=false,group=false,prodType="",options=[])
+  attr_accessor :name , :prodType,:optional,:initial,:final
+  def initialize(name,optional=false,prodType="",initial=false,final=false)
     @name=name
     @prodType=prodType
      @optional=optional
+     @initial=initial
+     @final=final
     # @groupOp=group
     # @opciones =opciones
 
   end
 
 end
+
+
 class Gram
   attr_accessor :name , :productionText,:optionsGr,:productions
   def optionsGr?()
@@ -32,35 +36,50 @@ class Gram
       gr.genProductions
     end
   end
-  def self.print
+  def self.print2
     for gr in @@grams
         grOp=""
         grOp="[grOp]" if gr.optionsGr?
-        puts gr.name + grOp +  " --> " + gr.productionText.to_s
+        #puts gr.name + grOp +  " --> " + gr.productionText.to_s
+        print gr.name + grOp + '    prd-> '
+        for p in gr.productions
+            print p.name+","
+        end
+        puts
     end
   end
+
   def genProductions
     array = @productionText.split( /\s|(\|)|(\,)|(\()|(\))|(\?)/).reject { |c| c.empty? }
 
     i=0
     while elem=array[i]
       case elem
+      when ")"
+        i+=1
+        next
       when "?"
+
         if(@productions.last)
           @productions.last.optional=true
+          @productions.last.final=true if i==array.length-1
         else
           ##error
           raise "error en ? gram " + array.join(" ")
         end
       when "(" #solo soporta un nivel #falta optimizacion
           if(to=array[i..-1].index ")")
-            group=array[i+1..to+i-1].join(' ')
+            tmp = array[i+1..to+i-1]
+            (f = tmp.find_index(")")) && tmp.delete_at(f)
+            group=tmp.join(' ')
             name="group"+@@gindex.to_s
             gram=Gram.new(name,group)
             #gram.genProductions
             @@grams.push gram
             p=Production.new (gram.name)
             p.prodType= :gram
+            p.initial=true if i==0
+            p.final=true if i==array.length-1
             @productions.push p
             @@gindex+=1
             i=to+1
@@ -74,23 +93,31 @@ class Gram
           if (gram= search_gram elem)
             p=Production.new (gram.name)
             p.prodType= :gram
+            p.initial=true if i==0
+            p.final=true if i==array.length-1
             @productions.push p
-          elsif (expr= Expr.search_expr (elem)) 
-            
+          elsif (expr= Expr.search_expr (elem))
+
             if expr.name=='identificador'
-               if (id=Expr.search_reserved (elem)) 
+               if (id=Expr.search_reserved (elem))
                  p=Production.new (elem)
                  p.prodType= :token
+                 p.initial=true if i==0
+                 p.final=true if i==array.length-1
                  @productions.push p
                else
                  p=Production.new (elem)
                  p.prodType= :token
+                 p.initial=true if i==0
+                 p.final=true if i==array.length-1
                  @productions.push p
                end
 
             else
             p=Production.new (elem)
             p.prodType= :token
+            p.initial=true if i==0
+            p.final=true if i==array.length-1
             @productions.push p
             end
           else
@@ -105,115 +132,55 @@ class Gram
       i+=1
     end
   end
+
   def gram? text
     for gram in @@grams
       return true if text==gram.name
     end
     return false
   end
+
   def search_gram text
     for gram in @@grams
       return gram if text==gram.name
     end
     return nil
   end
-  # def genPs (grupo=false)
-  #   sep = grupo ? "," : " "
-  #   array = @produccion.split(sep)
-  #
-  #   for x in array
-  #     op=false
-  #     gr=false
-  #     conop=false
-  #     opciones=[]
-  #     if(x[-1, 1]=="?")
-  #       op=true
-  #       x.chop!
-  #     end
-  #     if(x[0]=="(" and x[-1,1]==")")
-  #       x[0]=""
-  #       x.chop!
-  #       nnom="grupo"+@@gindex
-  #       @@gindex+=1
-  #       tmp=Gram.new(nnom,x)
-  #       x=nnom
-  #       @@grams.push(tmp)
-  #       tmp.genPs(true)
-  #     else
-  #       arrayOp= x.split("|")
-  #       if(arrayOp.count>1)
-  #         conop=true
-  #         for o in arrayOp
-  #           opciones.push(P.new(o,ckTipo(o) ) )
-  #         end
-  #       end
-  #     end
-  #     Ps.push(P( (x,conop ? "grOp" : ckTipo(x)) , op , gr ,opciones ))
-  #   end
-  # end
-  #
-  # def ckTipo(pal)
-  #   for(gram in @@grams)
-  #       if(pal==gram.nombre)
-  #         return "gramatica"
-  #       end
-  #
-  #   end
-  #   for exp in Expr.exprs
-  #     if (pal==exp.name)
-  #       return "token"
-  #     end
-  #   end
-  #   for exp in Expr.reserved
-  #     if pal==exp.name
-  #       return "token"
-  #     end
-  #   end
-  #   return "desconocido"
-  # end
-  #
-  # def self.isGram(pal)
-  #   i=0
-  #   for g in @@grams
-  #     i+=1
-  #     if pal==g.nombre
-  #       return i-1
-  #     end
-  #   end
-  #   return -1
-  # end
+
   def self.grams
     @@grams
   end
+
   def self.gram (name)
     for g in @@grams
       return g if name==g.name
     end
     return nil
   end
+
   @@gindex=0
   @@grams=[
     Gram.new( "archivo","defImportaciones? defroom? defclases? deffunciones? mainBloque"),
-    Gram.new( "defImportaciones","gets inicio salto importaciones? terminacion"),
+    Gram.new( "defImportaciones","gets inicioBloque importaciones? terminacion"),
     Gram.new( "importaciones","importacion importaciones?"),
-    Gram.new( "importacion","importar (string|identificador) identificador? salto"),
-    Gram.new( "defroom","room identificador salto"),
-    Gram.new( "defclases","modules inicio salto clases? terminacion"),
+    Gram.new( "importacion","importar (string|identificador) identificador? pcoma"),
+    Gram.new( "defroom","room identificador pcoma"),
+    Gram.new( "defclases","modules inicioBloque clases? terminacion"),
     Gram.new( "clases","clase clases?"),
-    Gram.new( "clase","modificadores? modulo identificador (parIni identificador parFin)? inicio salto instrucciones? constructor? instrucciones? destructor? instrucciones? terminacion"),
+    Gram.new( "clase"," modulo identificador (parIni identificador parFin )? inicioBloque instrucciones? constructor? instrucciones? destructor? instrucciones? terminacion"),
     Gram.new( "constructor","make bloqueDec bloque"),
     Gram.new( "destructor","umake bloque"),
-    Gram.new( "deffunciones","fns inicio salto funciones? terminacion"),
+    Gram.new( "deffunciones","fns inicioBloque funciones? terminacion"),
     Gram.new( "funciones","funcion funciones?"),
     Gram.new( "funcion","modificadores? decFn identificador bloqueDec  tipoRetorno tipoDato  bloque"),
     Gram.new( "bloqueDec","parIni declaraciones? parFin"),
     Gram.new( "mainBloque", "main  bloque"),
-    Gram.new( "sbloque", "inicio salto instrucciones? salto"),#/provicional
-    Gram.new( "bloque", "inicio salto instrucciones? terminacion  "),
+    Gram.new( "sbloque", "inicioBloque instrucciones? pcoma"),#/provicional
+    Gram.new( "bloque", "inicioBloque instrucciones? terminacion  "),
 
-    Gram.new( "prueba","inicio terminacion? salto"),
-    Gram.new( "prueba2"," prueba? inicio"),
-    Gram.new( "prueba3","terminacion (salto|terminacion)"),
+   # Gram.new( "prueba","inicioBloque terminacion? pcoma"),
+   # Gram.new( "prueba2"," prueba? inicioBloque"),
+   # Gram.new( "prueba3","terminacion (pcoma|terminacion)"),
 
 
     Gram.new( "modificadores","modificador modificadores?"),
@@ -234,11 +201,11 @@ class Gram
     Gram.new( "instrucciones","instruccion instrucciones?"),
     #  Gram.new( "sinstruccion","()"),#quite estructura
     Gram.new( "instruccionSimple","operacionUni|asignar"),#quite estructura
-    Gram.new( "instruccion","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList) salto"),
+    Gram.new( "instruccion","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList) pcoma"),
     Gram.new( "estructura","estPregunta|estLoop|estTloop|estCloop|estNor|estRouter"),#para prueba
-    Gram.new( "declaracion","modificadores? definicion identificador inicio tipoDato opAsignacion?"),#para prueba
+    #Gram.new( "declaracion","modificadores? definicion identificador inicioBloque tipoDato opAsignacion?"),#para prueba
 
-    Gram.new( "llamadoFn","parIni parametros? parFin salto"),
+    Gram.new( "llamadoFn","parIni parametros? parFin pcoma"),
     Gram.new( "estRetorno","retorno (valor|operacines)?"),
     Gram.new( "operaciones","(operacionUni|operacion) (oprMatoperaciones)?"),
 
@@ -253,16 +220,16 @@ class Gram
     Gram.new( "estLoop","loop identificador in iterable bloque"),
     Gram.new( "iterable","identificador|estRango"),
     Gram.new( "estRango","valor rango valor"),
-    Gram.new( "estTloop","tloop declaraciones?  terminacionSimple condiciones? terminacionSimple instruccionSimple? bloque"),
+    Gram.new( "estTloop","tloop declaraciones?  pcoma condiciones? pcoma instruccionSimple? bloque"),
     Gram.new( "estCloop","cloop condiciones tipoRetorno? bloque"),
-    Gram.new( "estRouter","router valor inicio salto ports? estNotport salto? terminacion"),
+    Gram.new( "estRouter","router valor inicioBloque ports? estNotport  terminacion"),
     Gram.new( "ports","estPort instrucciones? ports?"),
     Gram.new( "estPort","port ll bloque"),
     Gram.new( "ll","literal (separacion ll)?"),
     Gram.new( "estNotport","notPort bloque"),
     Gram.new( "estNor","capError bloque ports estRest terminacion"),
     Gram.new( "estRest","rest bloque"),
-    Gram.new( "defLista","list definicion identificador inicio tipoDato asigLL?"),
+    Gram.new( "defLista","list definicion identificador inicioBloque tipoDato asigLL?"),
     Gram.new( "asigLL","asignacion literalList"),
     Gram.new( "literalList","corchIni ll corchFin"),
     Gram.new( "defEvento","signal identificador literalList "),
@@ -272,8 +239,4 @@ class Gram
     Gram.new( "defList","list identificador inicio tipoDato asigLL?"),
     Gram.new( "defTam","corchIni numero corchFin"),
   ]
-
-
-
-
 end

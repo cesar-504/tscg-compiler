@@ -19,90 +19,93 @@
 #   lib.print("mayor que\" dos")
 # :if(n<0):
 #   lib.print('menor que 0')
+
 # :
+
 #   lib.print("entre 0 y 2"
 #programa
 #importacion
- gets :
-  get libreria Nombre
-  get  otralibreria
+ gets :>
+  get libreria Nombre;
+  get  otralibreria;
 ;;
 # # #room
- room Cuarto
- modules:
-      mod UnaClase(clasePadre):
-    #contructor
-        make (var sdf:num =0):
-            asd=789
-            fksj=asd
+room Cuarto;
+ modules:>
+      mod UnaClase(clasePadre):>
+    #constructor
+        make (var sdf:num =0):>
+            asd=789;
+            fksj=asd;
         ;;
         #destructor
-        umake:
+        umake:>
             ###
         ;;
      ;;
 ;;
-fns:
-    fn funcion(var x1:num)->num:
-        x1=34
-    ;;
-    fn funcion2(var x1:num)->num:
-        x1=34
-    ;;
-;;
-main:
-     var asd:num=0
-     var asd2:text="ssdfsdf"
-     #declarar variable
-def variable:int=123
-var variable2:string='texto 1'
-def varible3:int=34
-#asignacion
-variable=10
-  #if
-if variable>variable3:
-    asd=123
-;;
-#else if
-?: variable==variable3:
-asd=13
-;;
-#else
-nif:
-asd=543
-;;
-loop i in 1...10:
-    #print(i)
-    var f:num =678
-;;
-tloop var i:num=0;i<10;i++:
-    #print(i)
-    next
-;;
-cloop true:
-    #print('un ciclo')
-;;
-cloop true ->:
-    #print('un ciclo do')
-;;
-router variable:
-    port 'asd','asd','asd':
-        #print(variable)
-        ;;
-    port 123:
-        #print("numero")
-        ;;
-    notport:
-        #print("otra cosa")
-        ;;
-;;
-signal evento ['unaFuncion','otraFuncion']
-#emitir evento
-emit evento
-array miArrar:num = [123,123,123]
-list lista:num=[123,123,123,123]
-    # asd=345
-    # if asd<123:
-    #     asd=0
-    # ;;
-;;
+# fns:
+#     fn funcion(var x1:num)->num:
+#         x1=34;
+#     ;;
+#     fn funcion2(var x1:num)->num:
+#         x1=34;
+#     ;;
+# ;;
+ main:>
+ ;;
+#      var asd:num=0;
+#      var asd2:text="ssdfsdf";
+#      #declarar variable;
+# def variable:int=123;
+# var variable2:string='texto 1';
+# def varible3:int=34;
+# #asignacion
+# variable=10;
+#   #if
+# if variable>variable3:
+#     asd=123;
+# ;;
+# #else if
+# ?: variable==variable3:
+# asd=13;
+# ;;
+# #else
+# nif:
+# asd=543;
+# ;;
+# loop i in 1...10:
+#     #print(i);
+#     var f:num =678;
+# ;;
+# tloop var i:num=0;i<10;i++:
+#     #print(i);
+#     next;
+# ;;
+# cloop true:
+#     #print('un ciclo');
+# ;;
+# cloop true ->:
+#     #print('un ciclo do');
+# ;;
+# router variable:
+#     port 'asd','asd','asd':
+#         #print(variable);
+#         ;;
+#     port 123:
+#         #print("numero");
+#         ;;
+#     notport:
+#         #print("otra cosa");
+#         ;;
+# ;;
+# signal evento ['unaFuncion','otraFuncion'];
+# #emitir evento;
+# emit evento;
+# array miArrar:num = [123,123,123];
+# list lista:num=[123,123,123,123];
+#     # asd=345
+#     # if asd<123:
+#     #     asd=0
+#     # ;;
+# ;;

@@ -39,8 +39,9 @@ class Expr
     Expr.new("rango", /^\.\.\./ ),
     Expr.new("puntuacion", /^\./ ),
     Expr.new("terminacion", /^;;/ ),
-    Expr.new("terminacionSimple", /^;/ ),
+    Expr.new("pcoma", /^;/ ),
     Expr.new("separacion", /^,/ ),
+    Expr.new("inicioBloque", /^:>/ ),
     Expr.new("inicio", /^:/ ),
 
     Expr.new("self", /^\$/ ),

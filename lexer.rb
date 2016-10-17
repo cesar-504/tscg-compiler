@@ -33,7 +33,7 @@ class Lexer
           @line=@line[match.end(0)..-1]
           @columnSum+=match.end(0)
           case expr.name
-          when 'espacio','comentario'#,'comentariob'
+          when 'espacio','comentario','salto'#,'comentariob'
             return next_token
             # when 'otro'
             #   puts "token desconocido: "+match[0]
