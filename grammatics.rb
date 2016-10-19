@@ -171,6 +171,7 @@ class Gram
     Gram.new( "constructor","make bloqueDec bloque"),
     Gram.new( "destructor","umake bloque"),
     Gram.new( "deffunciones","fns inicioBloque funciones? terminacion"),
+
     Gram.new( "funciones","funcion funciones?"),
     Gram.new( "funcion","modificadores? decFn identificador bloqueDec  tipoRetorno tipoDato  bloque"),
     Gram.new( "bloqueDec","parIni declaraciones? parFin"),
@@ -181,6 +182,7 @@ class Gram
    # Gram.new( "prueba","inicioBloque terminacion? pcoma"),
    # Gram.new( "prueba2"," prueba? inicioBloque"),
    # Gram.new( "prueba3","terminacion (pcoma|terminacion)"),
+
 
 
     Gram.new( "modificadores","modificador modificadores?"),
@@ -207,7 +209,6 @@ class Gram
 
     Gram.new( "estructura","(estPregunta|estLoop|estTloop|estCloop|estNor|estRouter)"),#para prueba
     #Gram.new( "declaracion","modificadores? definicion identificador inicioBloque tipoDato opAsignacion?"),#para prueba
-
     Gram.new( "llamadoFn","parIni parametros? parFin pcoma"),
     Gram.new( "estRetorno","retorno (valor|operaciones)?"),
     Gram.new( "operaciones","operaciones1 (oprMat|operaciones)?"),

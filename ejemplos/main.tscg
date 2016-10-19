@@ -25,16 +25,20 @@
 #   lib.print("entre 0 y 2"
 #programa
 #importacion
+
  gets :>
+
   get libreria Nombre;
   get  otralibreria;
 ;;
 # # #room
+
 room Cuarto;
  modules:>
       mod UnaClase(clasePadre):>
     #constructor
         make (var sdf:num =0):>
+
             asd=789;
             fksj=asd;
         ;;
@@ -44,6 +48,7 @@ room Cuarto;
         ;;
      ;;
 ;;
+
 fns:>
     fn funcion(var x1:num)->num:>
         x1=34;

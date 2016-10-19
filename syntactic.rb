@@ -92,7 +92,6 @@ class Syntactic
      false
   end
 
-
   def check_gram gram,index=0
     #puts "Gram: "+gram.name
     return check_gram_gr(gram,index) if gram.optionsGr?
@@ -107,6 +106,7 @@ class Syntactic
         end
         #return check_prod2 Gram.gram(gram.productions[index+1].name)
         return check_gram gram,index+1
+
       else
         if prod.optional
           #return check_prod2 Gram.gram(gram.productions[index+1].name)
@@ -133,6 +133,7 @@ class Syntactic
       end
       index+=1
     end
+
     #puts "gGram rechazada: "+gram.name
     return GramResult.new(error:true)
   end
@@ -145,6 +146,7 @@ class Syntactic
     @contextIndex-=1
     @contextChange=true
   end
+
   def end_instruction
 
   end
