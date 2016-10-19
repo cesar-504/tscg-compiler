@@ -197,18 +197,21 @@ class Gram
     Gram.new( "aux1","identificador"),
     Gram.new( "asignar","identificador opAsignacion"),
     Gram.new( "operacionUni","identificador opUnit"),
-    Gram.new( "opAsignacion","(asignacion|op+igual) (valor|operacines)"),
-    Gram.new( "instrucciones","instruccion instrucciones?"),
+    Gram.new( "opAsignacion","opAsignacion1 (valor|operaciones)"),
+    Gram.new( "opAsignacion1","(asignacion|op+igual) "),
+    Gram.new( "instrucciones","instruccion instrucciones? "),
     #  Gram.new( "sinstruccion","()"),#quite estructura
     Gram.new( "instruccionSimple","operacionUni|asignar"),#quite estructura
-    Gram.new( "instruccion","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList) pcoma"),
-    Gram.new( "estructura","estPregunta|estLoop|estTloop|estCloop|estNor|estRouter"),#para prueba
+    Gram.new( "instruccion","instruccion1 pcoma"),
+    Gram.new( "instruccion1","(declaracion|asignar|estructura|llamadoFn|estRetorno|interrupcion|defEvento|emitir|conectar|defArray|defList)"),
+
+    Gram.new( "estructura","(estPregunta|estLoop|estTloop|estCloop|estNor|estRouter)"),#para prueba
     #Gram.new( "declaracion","modificadores? definicion identificador inicioBloque tipoDato opAsignacion?"),#para prueba
 
     Gram.new( "llamadoFn","parIni parametros? parFin pcoma"),
-    Gram.new( "estRetorno","retorno (valor|operacines)?"),
-    Gram.new( "operaciones","(operacionUni|operacion) (oprMatoperaciones)?"),
-
+    Gram.new( "estRetorno","retorno (valor|operaciones)?"),
+    Gram.new( "operaciones","operaciones1 (oprMat|operaciones)?"),
+    Gram.new( "operaciones1","(operacionUni|operacion)"),
     Gram.new( "parametros","identificador"),#falta
 
     Gram.new( "estPregunta","pregunta condiciones bloque grpEstElif? estNif? "),
@@ -218,7 +221,7 @@ class Gram
     Gram.new( "condiciones","condicion (oprLog condiciones)?"),
     Gram.new( "condicion","valor (oprComp valor)?"),
     Gram.new( "estLoop","loop identificador in iterable bloque"),
-    Gram.new( "iterable","identificador|estRango"),
+    Gram.new( "iterable","(identificador|estRango)"),
     Gram.new( "estRango","valor rango valor"),
     Gram.new( "estTloop","tloop declaraciones?  pcoma condiciones? pcoma instruccionSimple? bloque"),
     Gram.new( "estCloop","cloop condiciones tipoRetorno? bloque"),
@@ -235,7 +238,9 @@ class Gram
     Gram.new( "defEvento","signal identificador literalList "),
     Gram.new( "emitir","emit identificador"),
     Gram.new( "conectar","identificador link llamadoFn"),
-    Gram.new( "defArray","array  identificador inicio tipoDato (asigLL|defTam)"),
+    Gram.new( "defArray","array  identificador inicio tipoDato defArray1"),
+    Gram.new( "defArray1","(asigLL|defTam)"),
+
     Gram.new( "defList","list identificador inicio tipoDato asigLL?"),
     Gram.new( "defTam","corchIni numero corchFin"),
   ]

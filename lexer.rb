@@ -42,8 +42,8 @@ class Lexer
             if (id = Expr.search_reserved match[0])
               return Token.new(id.name,nil,match[0],@nline,ncolumn)
             end
-            num=@sim_table.add_id(match[0])
-            return Token.new(expr.name,num,match[0],@nline,ncolumn)
+            #num=@sim_table.add_id(match[0])
+            return Token.new(expr.name,nil,match[0],@nline,ncolumn)
           end
           return Token.new(expr.name,nil,match[0],@nline,ncolumn)
         end

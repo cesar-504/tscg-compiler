@@ -1,28 +1,24 @@
 class SimTable
-  def initialize()
+
+  def initialize
     @sim_table=[]
   end
 
-  def exist_in_table?(id)
-    for item in @sim_table
-      return true if item==id
-    end
-    return false
+  def exist_in_table? token
+    return true if index_of token
+    false
   end
-  def index_of(id)
-    i=0
-    for item in @sim_table
-      return i if item==id
-      i+=1
-    end
-    return nil
-  end
-  def add_id(id)
-    if !exist_in_table?( id)
-      @sim_table.push id
-      return @sim_table.count-1
-    end
-    return index_of id
 
+  def index token
+    @sim_table.each_with_index {|item, i| return i if item==token}
+    nil
   end
+
+  def add_token token
+    if (i=index token) then return i end
+      @sim_table.push token
+      @sim_table.count-1
+  end
+
+
 end

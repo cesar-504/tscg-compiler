@@ -124,17 +124,13 @@ class Expr
   def self.reserved
     @@reserved
   end
-  def self.search_reserved (idToken)
-    for expr in @@reserved
-        return expr if expr.regex.match(idToken)
-    end
-    return nil
+  def self.search_reserved idToken
+    @@reserved.each{|expr| return expr if expr.regex.match idToken }
+    nil
   end
-  def self.search_expr (idToken)
-    for expr in @@exprs
-        return expr if expr.regex.match(idToken)
-    end
-    return nil
+  def self.search_expr idToken
+    @@exprs.each{|expr| return expr if expr.regex.match idToken }
+    nil
   end
 
 
