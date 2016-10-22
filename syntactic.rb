@@ -3,6 +3,8 @@ require_relative 'lexer'
 require_relative 'token'
 require_relative 'sim-table'
 
+require 'tree'  
+
 class Object
   def dclone
     # Abracadabra !!!
@@ -32,12 +34,15 @@ class Syntactic
     @tokenStack=[]
     @gramStack=[]
     @tableStack=[SimTable.new]
+    @errorsStack=[]
     @contextIndex=0
     @contextChange=true
-    @syntaxTree=[]
+    @syntaxTree=Tree::TreeNode.new("ROOT", "Root Content")
+    @currentNode=@syntaxTree
     @lastAcceptedToken=nil
     @lastProd=nil
     @lastError=nil
+    
   end
 
 
@@ -45,7 +50,7 @@ class Syntactic
   def check_prod prod, index=0,nextProd=nil
 
       @currentToken ||= @lex.next_token
-      
+
       if @currentToken
 
         #puts 'revisando token:'+@currentToken.name+ ' produccion: '+prod.name
@@ -54,26 +59,28 @@ class Syntactic
 
 
           if @currentToken.name==prod.name
-
+              
               context_push if @currentToken.name=="inicioBloque" or @currentToken.name=="if" or @currentToken.name=="loop" or @currentToken.name=="cloop" or @currentToken.name=="tloop"
-              context_pop if @currentToken.name=="terminacion"
+              context_pop if @currentToken.name=="terminacion" or @currentToken.name=="elif" or @currentToken.name=="nif"
 
-              if @currentToken.name=="pcoma"
+              if @currentToken.name=="pcoma" 
                 print_token @currentToken ,true
               else
                 print_token @currentToken
               end
 
-              
+
               #puts 'token aceptado: '+@currentToken.name
+              @currentNode<<Tree::TreeNode.new(@currentToken.name+@currentNode.count.to_s)
               @lastProd=nextProd.dclone
               @currentToken=nil
               return GramResult.new(ok:true)
 
           end
-          
+
           @lastAcceptedToken=@currentToken.dclone
-          #puts "Token rechazado: "+@currentToken.name
+          @errorsStack << "Error se esperaba #{prod.name} pero se recibio #{@currentToken.name}. [#{@currentToken.noLine}:#{@currentToken.noColumn}]"
+          @errorsStack << "Token rechazado: "+@currentToken.name
           return GramResult.new(error:true)
 
         when :gram
@@ -87,8 +94,11 @@ class Syntactic
 
   def check_file
      r= check_gram Gram.gram('archivo')
+     @syntaxTree.print_tree
      return true if !r.error
      puts "Error se esperaba [#{@lastProd.name}] pero se recibio [#{@lastAcceptedToken.name}]. #{@lastAcceptedToken.noLine}:#{@lastAcceptedToken.noColumn}  "
+     puts "errorStack"
+     puts @errorsStack
      false
   end
 
@@ -96,9 +106,10 @@ class Syntactic
     #puts "Gram: "+gram.name
     return check_gram_gr(gram,index) if gram.optionsGr?
     while prod=gram.productions[index]
+      indexError=@errorsStack.count
       res= check_prod prod,0,gram.productions[index+1]
       if res.ok #or ( res.error and res.optional and prop.initial )
-
+        pop_errors_at indexError
 
         if prod.final
           #puts 'Gram aceptada: '+gram.name
@@ -110,9 +121,10 @@ class Syntactic
       else
         if prod.optional
           #return check_prod2 Gram.gram(gram.productions[index+1].name)
+
           return check_gram gram,index+1
         end
-        #puts "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  "
+        @errorsStack<< "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  "
 
         return GramResult.new(error:true)
       end
@@ -141,10 +153,12 @@ class Syntactic
   def context_push
     @contextIndex+=1
     @contextChange=true
+    @currentNode=@currentNode.children.last
   end
   def context_pop
     @contextIndex-=1
     @contextChange=true
+    @currentNode=@currentNode.parent
   end
 
   def end_instruction
@@ -163,6 +177,10 @@ class Syntactic
         print"\n"+" -> " * @contextIndex + "[#{@contextIndex}] "
       end
       @contextChange=false
+  end
+
+  def pop_errors_at index
+    @errorsStack.pop while @errorsStack.count!=index
   end
 
 end

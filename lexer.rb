@@ -16,9 +16,11 @@ class Lexer
     @columnSum=1
     @file =File.open(file_url, "r")
     @sim_table=SimTable.new
+    @endFile=false
   end
 
   def next_token()
+    return nil if @endFile
     if !@line or @line==""
       @nline+=1
       @file.rewind
@@ -50,7 +52,8 @@ class Lexer
       end
       return nil
     end
-    return nil
+    @endFile=true
+    return Token.new("finalArchivo",nil,"",@nline,"")
   end
 
 def to_s
