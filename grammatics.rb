@@ -162,7 +162,7 @@ class Gram
 
   @@gindex=0
   @@grams=[
-    Gram.new( "archivo","defImportaciones? defclases? deffunciones? mainBloque"),
+    Gram.new( "archivo","defImportaciones? defclases? deffunciones? mainBloque finalArchivo"),
     Gram.new( "defImportaciones","gets inicioBloque importaciones? terminacion"),
     Gram.new( "importaciones","importacion importaciones?"),
     Gram.new( "importacion","importar (string|identificador) identificador? pcoma"),
@@ -177,7 +177,7 @@ class Gram
     Gram.new( "funciones","funcion funciones?"),
     Gram.new( "funcion","decFn identificador bloqueDec  tipoRetorno tipoDato  bloque"),
     Gram.new( "bloqueDec","parIni declaraciones? parFin"),
-    Gram.new( "mainBloque", "main  inicioBloque instrucciones?  finalArchivo"),
+    Gram.new( "mainBloque", "main  inicioBloque instrucciones?  "),
     Gram.new( "sbloque", "inicioBloque instrucciones? pcoma"),#/provicional
     Gram.new( "bloque", "inicioBloque instrucciones? terminacion  "),
     Gram.new( "declaraciones","declaracion declaraciones?"),

@@ -1,3 +1,6 @@
+
+
+
 # let lib get libreria
 # var asd=123
 # var dsa=321.32
@@ -26,59 +29,59 @@
 #programa
 #importacion
 
- gets :>
+#  gets :>
 
-  get libreria Nombre;
-  get  otralibreria;
-;;
+#   get libreria Nombre;
+#   get  otralibreria;
+# ;;
 # # #room
 
 #room Cuarto;
- modules:>
-      mod UnaClase(clasePadre):>
-    #constructor
-        make (var sdf:num =0):>
+#  modules:>
+#       mod UnaClase(clasePadre):>
+#     #constructor
+#         make (var sdf:num =0):>
 
-            asd=789;
-            fksj=asd;
-        ;;
-        #destructor
-        umake:>
-            ###
-        ;;
-     ;;
-;;
+#             asd=789;
+#             fksj=asd;
+#         ;;
+#         #destructor
+#         umake:>
+#             ###
+#         ;;
+#      ;;
+# ;;
 
-fns:>
-    fn funcion(var x1:num)->num:>
-        x1=34;
-    ;;
-    fn funcion2(var x1:num)->num:>
-        x1=34;
-    ;;
-;;
+# fns:>
+#     fn funcion(var x1:num)->num:>
+#         x1=34;
+#     ;;
+#     fn funcion2(var x1:num)->num:>
+        # x1=34;
+    # ;;
+# ;;
  main:>
 
-     var asd:num=0;
-     var asd2:text="ssdfsdf";
+     #var asd:num=0;
+    #  var asd2:text="ssdfsdf";
 #      #declarar variable;
-def variable:int=123;
-var variable2:string='texto 1';
-def varible3:int=34;
+# def variable:int=123;
+# var variable2:string='texto 1';
+# def varible3:int=34;
 # #asignacion
-variable=10;
+# variable=10;
 #   #if
-if variable>variable3:>
-    asd=123;
+# if variable>variable3:>
+#     asd=123;
 
 # #else if
-?: variable==variable3:>
-  asd=13;
+# ?: variable==variable3:>
+#   asd=13;
 
 # # #else
- nif:>
+#  nif:>
 #  asd=543;
-;;
+# ;;
 # loop var i:num in 1...10:>
 #     #print(i);
 #     var f:num =678;

@@ -3,7 +3,7 @@ require_relative 'lexer'
 require_relative 'token'
 require_relative 'sim-table'
 
-require 'tree'  
+require 'tree'
 
 class Object
   def dclone
@@ -42,7 +42,7 @@ class Syntactic
     @lastAcceptedToken=nil
     @lastProd=nil
     @lastError=nil
-    
+    @treeIndex=0
   end
 
 
@@ -59,11 +59,11 @@ class Syntactic
 
 
           if @currentToken.name==prod.name
-              
+
               context_push if @currentToken.name=="inicioBloque" or @currentToken.name=="if" or @currentToken.name=="loop" or @currentToken.name=="cloop" or @currentToken.name=="tloop"
               context_pop if @currentToken.name=="terminacion" or @currentToken.name=="elif" or @currentToken.name=="nif"
 
-              if @currentToken.name=="pcoma" 
+              if @currentToken.name=="pcoma"
                 print_token @currentToken ,true
               else
                 print_token @currentToken
@@ -71,7 +71,7 @@ class Syntactic
 
 
               #puts 'token aceptado: '+@currentToken.name
-              @currentNode<<Tree::TreeNode.new(@currentToken.name+@currentNode.count.to_s)
+
               @lastProd=nextProd.dclone
               @currentToken=nil
               return GramResult.new(ok:true)
@@ -84,6 +84,8 @@ class Syntactic
           return GramResult.new(error:true)
 
         when :gram
+          @currentNode<<Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}" )
+          @currentNode=@currentNode.children.last
           return check_gram Gram.gram(prod.name)
         end
       end
@@ -93,6 +95,9 @@ class Syntactic
 
 
   def check_file
+      #lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}")
+      @currentNode<<Tree::TreeNode.new("[#{@currentNode.count-1}] archivo" )
+      @currentNode=@currentNode.children.last
      r= check_gram Gram.gram('archivo')
      @syntaxTree.print_tree
      return true if !r.error
@@ -104,26 +109,36 @@ class Syntactic
 
   def check_gram gram,index=0
     #puts "Gram: "+gram.name
+    
     return check_gram_gr(gram,index) if gram.optionsGr?
     while prod=gram.productions[index]
       indexError=@errorsStack.count
+      lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}")
+      @currentNode<<lastNode
+      #@currentNode=lastNode
       res= check_prod prod,0,gram.productions[index+1]
       if res.ok #or ( res.error and res.optional and prop.initial )
         pop_errors_at indexError
 
         if prod.final
           #puts 'Gram aceptada: '+gram.name
+
+          #@currentNode=@currentNode.parent
           return GramResult.new(ok:true)
         end
         #return check_prod2 Gram.gram(gram.productions[index+1].name)
         return check_gram gram,index+1
 
       else
+        #@currentNode=lastNode
+        @currentNode=lastNode.parent
+        @currentNode.remove!(lastNode)
         if prod.optional
           #return check_prod2 Gram.gram(gram.productions[index+1].name)
 
           return check_gram gram,index+1
         end
+
         @errorsStack<< "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  "
 
         return GramResult.new(error:true)
@@ -153,12 +168,12 @@ class Syntactic
   def context_push
     @contextIndex+=1
     @contextChange=true
-    @currentNode=@currentNode.children.last
+    #@currentNode=@currentNode.children.last
   end
   def context_pop
     @contextIndex-=1
     @contextChange=true
-    @currentNode=@currentNode.parent
+    #@currentNode=@currentNode.parent
   end
 
   def end_instruction

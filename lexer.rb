@@ -27,7 +27,7 @@ class Lexer
       @line = @file.readlines[@nline-1]
       @columnSum=1
     end
-
+    
     while @line && @line.length>0
       for expr in Expr.exprs
         if match= expr.regex.match(@line)
