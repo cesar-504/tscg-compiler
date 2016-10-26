@@ -84,8 +84,10 @@ class Syntactic
           return GramResult.new(error:true)
 
         when :gram
-          @currentNode<<Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}" )
-          @currentNode=@currentNode.children.last
+          #@currentNode<<Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}" )
+          #@currentNode=@currentNode.children.last
+    #       @last2=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}" )
+    # @currentNode<<@last2
           return check_gram Gram.gram(prod.name)
         end
       end
@@ -96,8 +98,11 @@ class Syntactic
 
   def check_file
       #lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}")
-      @currentNode<<Tree::TreeNode.new("[#{@currentNode.count-1}] archivo" )
-      @currentNode=@currentNode.children.last
+      @name="[#{@currentNode.count-1}] archivo"
+      lastNode=Tree::TreeNode.new(@name)
+
+      @currentNode<<lastNode
+      @currentNode=lastNode
      r= check_gram Gram.gram('archivo')
      @syntaxTree.print_tree
      return true if !r.error
@@ -110,29 +115,31 @@ class Syntactic
   def check_gram gram,index=0
     #puts "Gram: "+gram.name
     
+
     return check_gram_gr(gram,index) if gram.optionsGr?
     while prod=gram.productions[index]
       indexError=@errorsStack.count
-      lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name}")
+      lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{prod.name} #{prod.prodType}")
       @currentNode<<lastNode
-      #@currentNode=lastNode
+      @currentNode=lastNode if prod.prodType==:gram
       res= check_prod prod,0,gram.productions[index+1]
+      @currentNode=@currentNode.parent if prod.prodType==:gram
       if res.ok #or ( res.error and res.optional and prop.initial )
         pop_errors_at indexError
-
         if prod.final
           #puts 'Gram aceptada: '+gram.name
-
+          
           #@currentNode=@currentNode.parent
           return GramResult.new(ok:true)
         end
         #return check_prod2 Gram.gram(gram.productions[index+1].name)
         return check_gram gram,index+1
-
+        
       else
         #@currentNode=lastNode
         @currentNode=lastNode.parent
         @currentNode.remove!(lastNode)
+        @currentNode.remove!(@last2)
         if prod.optional
           #return check_prod2 Gram.gram(gram.productions[index+1].name)
 
@@ -153,10 +160,18 @@ class Syntactic
 
   def check_gram_gr gram,index=0
     while p=gram.productions[index]
+      lastNode=Tree::TreeNode.new("[#{@currentNode.count-1}] #{p.name} #{p.prodType}")
+      @currentNode<<lastNode
+      @currentNode=lastNode if p.prodType==:gram
       res= check_prod p,0,gram.productions[index+1]
+      @currentNode=@currentNode.parent if p.prodType==:gram
       if res.ok
         #puts "gGram aceptada: "+gram.name
         return GramResult.new(ok:true)
+      else
+        @currentNode=lastNode.parent
+        @currentNode.remove!(lastNode)
+        @currentNode.remove!(@last2)
       end
       index+=1
     end
@@ -192,6 +207,7 @@ class Syntactic
         print"\n"+" -> " * @contextIndex + "[#{@contextIndex}] "
       end
       @contextChange=false
+      puts() if token.name=="finalArchivo"
   end
 
   def pop_errors_at index

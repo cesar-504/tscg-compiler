@@ -62,7 +62,7 @@
 # ;;
  main:>
 
-     #var asd:num=0;
+    #  var asd:num=0;
     #  var asd2:text="ssdfsdf";
 #      #declarar variable;
 # def variable:int=123;
@@ -71,8 +71,9 @@
 # #asignacion
 # variable=10;
 #   #if
-# if variable>variable3:>
-#     asd=123;
+if variable>variable3:>
+    asd=123;
+    ;; 
 
 # #else if
 # ?: variable==variable3:>
