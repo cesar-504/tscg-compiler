@@ -1,7 +1,7 @@
 require_relative 'grammatics'
 require_relative 'lexer'
 require_relative 'token'
-require_relative 'sim-table'
+require_relative 'sym-table'
 
 require 'tree'
 
@@ -31,13 +31,16 @@ class Syntactic
   def initialize(url)
     @lex=Lexer.new(url)
     @currentToken=nil
+    @delCurrentToken=true
     @tokenStack=[]
     @gramStack=[]
-    @tableStack=[SimTable.new]
+    @tableStack=[SymTable.new]
     @errorsStack=[]
     @contextIndex=0
+    @contextIndexOld=0
     @contextChange=true
     @syntaxTree=Tree::TreeNode.new("ROOT", "Root Content")
+    @symbolsTree=Tree::TreeNode.new("ROOT", "Root Content")
     @currentNode=@syntaxTree
     @lastAcceptedToken=nil
     @lastProd=nil
@@ -48,8 +51,11 @@ class Syntactic
 
 
   def check_prod prod, index=0,nextProd=nil
+      if @delCurrentToken
+        @currentToken = @lex.next_token
+        @delCurrentToken=false
+      end
 
-      @currentToken ||= @lex.next_token
 
       if @currentToken
 
@@ -73,7 +79,7 @@ class Syntactic
               #puts 'token aceptado: '+@currentToken.name
 
               @lastProd=nextProd.dclone
-              @currentToken=nil
+             @delCurrentToken=true
               return GramResult.new(ok:true)
 
           end
@@ -114,7 +120,7 @@ class Syntactic
 
   def check_gram gram,index=0
     #puts "Gram: "+gram.name
-    
+
 
     return check_gram_gr(gram,index) if gram.optionsGr?
     while prod=gram.productions[index]
@@ -123,18 +129,23 @@ class Syntactic
       @currentNode<<lastNode
       @currentNode=lastNode if prod.prodType==:gram
       res= check_prod prod,0,gram.productions[index+1]
+      lastNode.content=@currentToken.dclone
       @currentNode=@currentNode.parent if prod.prodType==:gram
       if res.ok #or ( res.error and res.optional and prop.initial )
         pop_errors_at indexError
         if prod.final
           #puts 'Gram aceptada: '+gram.name
-          
+
           #@currentNode=@currentNode.parent
           return GramResult.new(ok:true)
         end
+        if prod.name=="declaracion"
+          puts
+          ck_declaracion lastNode
+        end
         #return check_prod2 Gram.gram(gram.productions[index+1].name)
         return check_gram gram,index+1
-        
+
       else
         #@currentNode=lastNode
         @currentNode=lastNode.parent
@@ -152,7 +163,7 @@ class Syntactic
       end
       index+=1
     end
-   #puts "Gram aceptada: "+gram.name
+   puts "Gram aceptada: "+gram.name
    return GramResult.new(ok:true)
 
 
@@ -164,9 +175,25 @@ class Syntactic
       @currentNode<<lastNode
       @currentNode=lastNode if p.prodType==:gram
       res= check_prod p,0,gram.productions[index+1]
-      @currentNode=@currentNode.parent if p.prodType==:gram
+      lastNode.content=@currentToken.dclone
+      if p.prodType==:gram
+        @currentNode=@currentNode.parent
+        # tmp=""
+        # while @currentNode.children.count==1 and @currentNode.name!=tmp
+        #   tmp=@currentNode.name
+        #   @currentNode=@currentNode.children.last
+
+        #   @currentNode=@currentNode.parent
+
+        #  end
+      end
+
       if res.ok
         #puts "gGram aceptada: "+gram.name
+        if p.name=="declaracion"
+          puts
+          ck_declaracion lastNode
+        end
         return GramResult.new(ok:true)
       else
         @currentNode=lastNode.parent
@@ -181,13 +208,17 @@ class Syntactic
   end
 
   def context_push
-    @contextIndex+=1
+    
+    @contextIndex=@tableStack.count
     @contextChange=true
+    @tableStack.push SymTable.new
+
     #@currentNode=@currentNode.children.last
   end
   def context_pop
     @contextIndex-=1
     @contextChange=true
+    @tableStack.pop
     #@currentNode=@currentNode.parent
   end
 
@@ -212,6 +243,19 @@ class Syntactic
 
   def pop_errors_at index
     @errorsStack.pop while @errorsStack.count!=index
+  end
+
+  def ck_declaracion node
+    sim=SymbolStr.new(node.children[1].content.val,node.children[2].content.val,:var)
+    if @tableStack[@contextIndex].exist_in_table? sim
+        raise "Error redefinicion de variable : #{sim.name} "
+    end
+          
+    @tableStack[@contextIndex].add_symbol sim
+  end
+
+  def ck_opAsignacion
+    
   end
 
 end

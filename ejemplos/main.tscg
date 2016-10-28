@@ -45,7 +45,7 @@
 #             asd=789;
 #             fksj=asd;
 #         ;;
-#         #destructor
+#         destructor
 #         umake:>
 #             ###
 #         ;;
@@ -62,8 +62,8 @@
 # ;;
  main:>
 
-    #  var asd:num=0;
-    #  var asd2:text="ssdfsdf";
+     var asd:num=0;
+     var asd:num=7;
 #      #declarar variable;
 # def variable:int=123;
 # var variable2:string='texto 1';
@@ -71,14 +71,16 @@
 # #asignacion
 # variable=10;
 #   #if
-if variable>variable3:>
-    asd=123;
-    ;; 
+# if variable>variable3:>
+#     asd=123;
+#     if variable>variable3:>
+#     asd=123;
+#     ;;
 
-# #else if
+# # #else if
 # ?: variable==variable3:>
 #   asd=13;
-
+# ;;
 # # #else
 #  nif:>
 #  asd=543;

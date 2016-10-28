@@ -6,7 +6,7 @@ class Lexer
   #file.ungetc h
   #file.rewind
   require_relative 'token'
-  require_relative 'sim-table'
+  require_relative 'sym-table'
   require 'terminal-table'
 
   def initialize(file_url)
@@ -15,7 +15,7 @@ class Lexer
 
     @columnSum=1
     @file =File.open(file_url, "r")
-    @sim_table=SimTable.new
+    @sim_table=SymTable.new
     @endFile=false
   end
 

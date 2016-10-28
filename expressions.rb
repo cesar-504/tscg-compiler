@@ -80,7 +80,7 @@ class Expr
     #Expr.new("padre", /^parent$/ ),
     Expr.new("decFn", /^fn$/ ),
     #Expr.new("tipoDato", /^ul$|^num$|^text$|^decimal$|^real$|^bool$|^enum$|^vec2d$|^vec3d$|^vec4d$|^group$|^bites$|^list$|^cad$|^dic$|^item$|^snum$|^sdecimal$|^sreal$/ ),
-    Expr.new("tipoDato", /^ul$|^num$|^text$|^decimal$|^real$|^bool$|^enum$|^vec2d$|^vec3d$|^vec4d$|^group$|^bites$|^list$|^cad$|^dic$|^item$|^snum$|^sdecimal$|^sreal$/ ),
+    Expr.new("tipoDato", /^num$|^real$|^text$|^bool$|^list$/),
     Expr.new("boolVal", /^true$|^false$|^yes$|^no$/ ),#101
     #Expr.new("room", /^room$/ ),
     Expr.new("null", /^nil$/ ),
