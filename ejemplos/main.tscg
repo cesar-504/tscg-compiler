@@ -62,8 +62,8 @@
 # ;;
  main:>
 
-     var asd:num=0;
-     var asd:num=7;
+     var asd:num=45+78.12;
+     var asd2:num=7;
 #      #declarar variable;
 # def variable:int=123;
 # var variable2:string='texto 1';

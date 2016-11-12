@@ -3,7 +3,7 @@ require_relative 'expressions'
 require_relative 'lexer'
 require_relative 'grammatics'
 require_relative 'syntactic'
-url="/home/cesar/Documentos/Proyectos/ruby/tscg-compiler/ejemplos/main.tscg"
+url="./ejemplos/main.tscg"
 lex = Lexer.new(url)
 
 puts '///////////////////////////////////////////////////////////////////////////////'

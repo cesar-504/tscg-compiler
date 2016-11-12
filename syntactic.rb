@@ -246,16 +246,138 @@ class Syntactic
   end
 
   def ck_declaracion node
-    sim=SymbolStr.new(node.children[1].content.val,node.children[2].content.val,:var)
+    sim=SymbolStr.new(node.children[1].content,node.children[2].content,:var)
     if @tableStack[@contextIndex].exist_in_table? sim
-        raise "Error redefinicion de variable : #{sim.name} "
+        abort "Error redefinicion de variable : #{sim.name} #{node.children[1].content.noLine}:#{node.children[1].content.noColumn}"
     end
-          
+    puts    
+    opasig= ck_opAsignacion node.children[4]
     @tableStack[@contextIndex].add_symbol sim
   end
 
-  def ck_opAsignacion
+  def ck_opAsignacion node
+    array=[]
+    node.each { |n| array<< n.content if n.children.count==0 }
+    array.shift
     
+    array = to_postfix  array
+    result = evaluate_pfix array
+    puts result
+    puts array
+    puts
+    
+  end
+
+  def is_num?(n)
+	  n =~ /\d+\.?\d*/		
+  end
+  def is_id?(n)
+    n =~ /[a-zA-Z_]\w*/		
+  end
+
+
+  def to_postfix tokens
+    stack = []
+    out=[]
+    prec ={
+      "^"=>4,
+      "*"=>3,
+      "/"=>3,
+      "+"=>2,
+      "-"=>2,
+      "("=>1
+    }
+    assoc ={
+      "^":'r',
+      "*":'l',
+      "/":'l',
+      "+":'l',
+      "-":'l',
+      "(":'l'
+    }
+    sumOp=0
+    sumVar=0
+    error=false
+    #puts tokens
+    puts
+     i=0
+    for t in tokens
+    #puts t
+      if is_num? t.val or is_id? t.val
+        sumVar+=1
+        out.push t
+      elsif t.val == "("
+        stack.push t
+      elsif t.val==")"
+        while stack.last.val != "("
+          if !stack.last
+            abort "error: falta: ("
+            error=true
+            break;
+          end
+          out.push stack.pop  
+          
+        end
+        stack.pop if stack.last.val=="("
+      elsif t.val =~ /[+\-*\/]/
+        sumOp+=1
+        out.push stack.pop while stack.last and prec[stack.last.val] >= prec[t.val]
+        
+        stack.push t
+      else
+        abort  "error: inesperado: "+t 
+        error=true
+        break;
+      end
+      i+=1
+    end
+    stack.each{|item| abort  "error: falta: )" if item.val=="("} if stack
+    
+      
+    if sumOp!=sumVar-1 or (sumOp==0 and sumVar==0)
+      abort "error: numero de operadores y operandos no corresponde"
+    elsif !error
+      stack.reverse.each{ |op| out.push op }
+      puts out.join(" ")
+      return out
+    end
+  end
+
+  def evaluate_pfix tokens
+    stack = []
+
+    tokens.each do |token|
+      if token.name="numero" or token.name="numeroR" or token.name="string" or token.name="boolVal"
+        stack.push(token)
+      elsif token == "+"
+        rhs = stack.pop
+        lhs = stack.pop
+        stack.push ch_ope( lhs,rhs)
+      elsif token == "*"
+        rhs = stack.pop
+        lhs = stack.pop
+        stack.push ch_ope( lhs,rhs)
+      elsif token == "-"
+        rhs = stack.pop
+        lhs = stack.pop
+        stack.push ch_ope( lhs,rhs)
+      elsif token == "/"
+        rhs = stack.pop
+        lhs = stack.pop
+        stack.push "numeroR"
+      else
+        abort "toeken desconocido"
+      end
+    end
+
+    stack.pop.name
+  end
+  def ck_ope (lhs,rhs)
+    return "numero" if (lhs.name=="numero" and rhs.name=="numero") 
+    return "numeroR" if (lhs.name=="numero" and rhs.name=="numeroR") or (lhs.name=="numeroR" and rhs.name=="numeroR") or  (lhs.name=="numeroR" and rhs.name=="numero") 
+    return "string" if (lhs.name=="string" and rhs.name=="string")
+    return "boolVal" if (lhs.name=="boolVal" and rhs.name=="boolVal")
+    abort "tipos no compatible para la operacion:[#{lhs.name}] [#{rhs.name}]. #{lhs.noLine}:#{lhs.noColumn} " 
   end
 
 end

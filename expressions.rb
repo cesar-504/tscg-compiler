@@ -45,7 +45,7 @@ class Expr
 
     #Expr.new("self", /^\$/ ),
     #Expr.new("numero", /^((\d+)?\.\d+)[eE][+-]?\d+\W/ ),
-    Expr.new("numero", /^((\d+)?\.\d+)([eE][+-]?\d+)?/ ),
+    Expr.new("numeroR", /^((\d+)?\.\d+)([eE][+-]?\d+)?/ ),
     Expr.new("numero", /^\d+/ ),
 
     Expr.new("crear", /^~/ ),
