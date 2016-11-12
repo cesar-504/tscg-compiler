@@ -62,8 +62,10 @@
 # ;;
  main:>
 
-     var asd:num=45+78.12;
+
+     var asd:real=45+78.12;
      var asd2:num=7;
+
 #      #declarar variable;
 # def variable:int=123;
 # var variable2:string='texto 1';
@@ -119,4 +121,4 @@
 #     # if asd<123:
 #     #     asd=0
 #     # ;;
-#;;
+;;
