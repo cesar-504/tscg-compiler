@@ -28,5 +28,10 @@ class SymTable
       @sim_table.count-1
   end
 
+  def search_id id
+    @sim_table.each{|item| return item if id==item.name}
+    nil
+  end
+
 
 end

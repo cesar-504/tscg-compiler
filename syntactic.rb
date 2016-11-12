@@ -139,9 +139,9 @@ class Syntactic
           #@currentNode=@currentNode.parent
           return GramResult.new(ok:true)
         end
-        if prod.name=="declaracion"
-          puts
-          ck_declaracion lastNode
+        begin
+            send "ck_"+prod.name , lastNode# ck_declaracion lastNode
+        rescue NoMethodError
         end
         #return check_prod2 Gram.gram(gram.productions[index+1].name)
         return check_gram gram,index+1
@@ -156,14 +156,14 @@ class Syntactic
 
           return check_gram gram,index+1
         end
-
-        @errorsStack<< "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  "
+        abort "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  " if !prod.initial
+        #@errorsStack<< "Gram rechazada: #{gram.name} Error se esperaba [#{prod.name}] pero se recibio [#{@currentToken.name}]. #{@currentToken.noLine}:#{@currentToken.noColumn}  "
 
         return GramResult.new(error:true)
       end
       index+=1
     end
-   puts "Gram aceptada: "+gram.name
+   puts "Gram aceptada: "+gram.name 
    return GramResult.new(ok:true)
 
 
@@ -190,10 +190,14 @@ class Syntactic
 
       if res.ok
         #puts "gGram aceptada: "+gram.name
-        if p.name=="declaracion"
+        #if p.name=="declaracion"
           puts
-          ck_declaracion lastNode
-        end
+          begin
+            send "ck_"+p.name , lastNode# ck_declaracion lastNode
+          rescue NoMethodError
+          end
+        #end
+        
         return GramResult.new(ok:true)
       else
         @currentNode=lastNode.parent
@@ -246,16 +250,172 @@ class Syntactic
   end
 
   def ck_declaracion node
-    sim=SymbolStr.new(node.children[1].content.val,node.children[2].content.val,:var)
+    sim=SymbolStr.new(node.children[1].content.val,nil,:var)
     if @tableStack[@contextIndex].exist_in_table? sim
-        raise "Error redefinicion de variable : #{sim.name} "
+        abort "Error redefinicion de variable : #{sim.name} #{node.children[1].content.noLine}:#{node.children[1].content.noColumn}"
     end
-          
+    puts    
+    opasig= ck_opAsignacion node.children[4]
+    abort "tipo de variable [#{ node[3].content.val}] no coincide con el de la expresion asignada asignada [#{opasig}] #{node[3].content.noLine}:#{node[3].content.noColumn}" if opasig != node[3].content.val and !(opasig=="num" and node[3].content.val=="real")
+    sim.ctype=node[3].content.val
     @tableStack[@contextIndex].add_symbol sim
   end
 
-  def ck_opAsignacion
+  def node_to_array node
+    array=[]
+    node.each { |n| array<< n.content if n.children.count==0 }
+    array
+  end
+
+  def ck_opAsignacion node
+    array = node_to_array node
+    array.shift
+    result=nil
     
+      array = to_postfix  array
+      result = evaluate_pfix array
+    
+    abort "error en tokens" if !result
+    result
+\
+  end
+
+
+  def to_postfix tokens
+    stack = []
+    out=[]
+    prec ={
+      "^"=>10,
+      "*"=>9,
+      "/"=>9,
+      "+"=> 7,
+      "-"=>7,
+      "("=>5,
+      "<"=>4,
+      ">"=>4,
+      "<="=>4,
+      ">="=>4,
+      "=="=>3,
+      "!="=>3,
+      "&&"=>2,
+      "||"=>1
+    }
+    assoc ={
+      "^":'r',
+      "*":'l',
+      "/":'l',
+      "+":'l',
+      "-":'l',
+      "(":'l'
+    }
+    sumOp=0
+    sumVar=0
+    error=false
+    #puts tokens
+    puts
+     i=0
+    for t in tokens
+    #puts t
+      if (t.name=="num" or t.name=="real") or t.name=="identificador" or t.name=="string" 
+        sumVar+=1
+        out.push t
+      elsif t.val == "("
+        stack.push t
+      elsif t.val==")"
+        while stack.last.val != "("
+          if !stack.last
+            abort "error: falta: (. #{t.noLine}:#{t.noColumn}" 
+            error=true
+            break;
+          end
+          out.push stack.pop  
+          
+        end
+        stack.pop if stack.last.val=="("
+      elsif t.name=="oprMat" or t.name=="oprComp"  or t.name=="oprLog"
+        sumOp+=1
+        out.push stack.pop while stack.last and prec[stack.last.val] >= prec[t.val]
+        
+        stack.push t
+      else
+        abort  "error: inesperado: #{t.name }. #{t.noLine}:#{t.noColumn}"
+        error=true
+        break;
+      end
+      i+=1
+    end
+    stack.each{|item| abort  "error: falta: ). #{t.noLine}:#{t.noColumn}" if item.val=="("} if stack
+    
+      
+    if sumOp!=sumVar-1 or (sumOp==0 and sumVar==0)
+       abort "error: numero de operadores y operandos no corresponde. "
+    elsif !error
+      
+      return out
+    end
+  end
+
+  def search_id_in_tableStack id
+    @tableStack.reverse_each do |item|
+        s=item.search_id id 
+       return s if s
+    end
+    nil
+  end
+
+  def evaluate_pfix tokens
+    stack = []
+
+    tokens.each do |token|
+      
+      case token.name when "num","real","string","boolVal"
+        stack.push(token)
+        when "identificador"
+          
+          if (sym=search_id_in_tableStack token.val)
+            t = Token.new(sym.ctype,nil,sym.ctype,token.noLine,token.noColumn)
+            stack.push(t) 
+          else
+            abort "variable [#{token.val}] no definida. #{token.noLine}:#{token.noColumn} "
+          end
+      else 
+         rhs = stack.pop
+         lhs = stack.pop
+        case token.val 
+          when "+","*","-",">","<",">=","<=","==","!=","&&","||"
+            stack.push Token.new  ck_ope( lhs,rhs),nil,nil,rhs.noLine,rhs.noColumn
+          when "/"
+            stack.push Token.new "real",nil,nil,rhs.noLine,rhs.noColumn
+        else
+         
+          abort "token desconocido #{token.val}. #{token.noLine}:#{token.noColumn} "
+        end
+      end
+      
+        
+      
+    end
+
+    stack.pop.name
+  end
+  def ck_ope (lhs,rhs)
+    return "num" if (lhs.name=="num" and rhs.name=="num") 
+    return  "real" if (lhs.name=="num" and rhs.name=="real") or (lhs.name=="real" and rhs.name=="real") or  (lhs.name=="real" and rhs.name=="num") 
+    return "string" if (lhs.name=="string" and rhs.name=="string")
+    return Token.new "boolVal" if (lhs.name=="boolVal" and rhs.name=="boolVal")
+    abort "Error: tipos no compatible para la operacion :[#{lhs.name}] [#{rhs.name}]. #{rhs.noLine}:#{rhs.noColumn} " 
+  end
+
+  def ck_condiciones node
+    array = node_to_array node
+    result=nil
+    
+    puts "hola ////////"
+    array = to_postfix array
+    
+    abort "error en tokens" if !result
+    return result
+   
   end
 
 end

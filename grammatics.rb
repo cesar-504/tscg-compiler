@@ -74,7 +74,7 @@ class Gram
             tmp = array[i+1..to+i-1]
             (f = tmp.find_index(")")) && tmp.delete_at(f)
             group=tmp.join(' ')
-            name="group"+@@gindex.to_s
+            name="group: #{group}"+@@gindex.to_s
             gram=Gram.new(name,group)
             #gram.genProductions
             @@grams.push gram
@@ -162,7 +162,7 @@ class Gram
 
   @@gindex=0
   @@grams=[
-    Gram.new( "archivo","defImportaciones? defclases? deffunciones? mainBloque finalArchivo"),
+    Gram.new( "archivo","defImportaciones? defclases? deffunciones? mainBloque terminacion finalArchivo"),
     Gram.new( "defImportaciones","gets inicioBloque importaciones? terminacion"),
     Gram.new( "importaciones","importacion importaciones?"),
     Gram.new( "importacion","importar (string|identificador) identificador? pcoma"),
@@ -181,21 +181,21 @@ class Gram
     Gram.new( "sbloque", "inicioBloque instrucciones? pcoma"),#/provicional
     Gram.new( "bloque", "inicioBloque instrucciones? terminacion  "),
     Gram.new( "declaraciones","declaracion declaraciones?"),
-    Gram.new( "declaracion","definicion identificador inicio tipoDato opAsignacion?"),
-    Gram.new( "operacion","valor oprMat valor"),
+    Gram.new( "declaracion","definicion identificador inicio tipoDato opAsignacion"),#asignacion obligada
+    Gram.new( "operacion","valor (oprMat operacion)?"),
     Gram.new( "valor","(identificador|llamadoFn|literal|grpOp)"),
-    Gram.new( "grpOp","parIni operaciones parFin"),
-    Gram.new( "literal","(string|numero|boolVal)"),
+    Gram.new( "grpOp","parIni operacion parFin"),
+    Gram.new( "literal","(string|real|num|boolVal)"),
     Gram.new( "asignar","identificador opAsignacion"),
-    Gram.new( "opAsignacion","asignacion (valor|operaciones)"),
+    Gram.new( "opAsignacion","asignacion operacion"),
     Gram.new( "instrucciones","instruccion instrucciones? "),
     Gram.new( "instruccion","instruccionpcoma |estructura"),
     Gram.new( "instruccionpcoma","instruccion1 pcoma"),
     Gram.new( "instruccion1","(declaracion|asignar|llamadoFn|estRetorno|defList)"),
     Gram.new( "estructura","(estPregunta|estLoop|estTloop|estCloop)"),
     Gram.new( "llamadoFn","parIni parametros? parFin"),
-    Gram.new( "estRetorno","retorno (valor|operaciones)?"),
-    Gram.new( "operaciones","operacion (oprMat operaciones)?"),
+    Gram.new( "estRetorno","retorno operacion"),
+    #Gram.new( "operaciones","operacion (oprMat operaciones)?"),
     Gram.new( "parametros","identificador (separador parametros)?"),
     Gram.new( "estPregunta","pregunta condiciones inicioBloque instrucciones? grpEstElif? estNif? terminacion"),
     Gram.new( "grpEstElif","estElif grpEstElif?"),
@@ -213,6 +213,6 @@ class Gram
     Gram.new( "asigLL","asignacion literalList"),
     Gram.new( "literalList","corchIni ll corchFin"),
     Gram.new( "defList","list identificador inicio tipoDato asigLL?"),
-    Gram.new( "defTam","corchIni numero corchFin"),
+    Gram.new( "defTam","corchIni num corchFin"),
   ]
 end
