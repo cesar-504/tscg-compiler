@@ -54,7 +54,7 @@ class Semantic
     return "num" if (lhs.name=="num" and rhs.name=="num") 
     return  "real" if (lhs.name=="num" and rhs.name=="real") or (lhs.name=="real" and rhs.name=="real") or  (lhs.name=="real" and rhs.name=="num") 
     return "string" if (lhs.name=="string" and rhs.name=="string")
-    return Token.new "boolVal" if (lhs.name=="boolVal" and rhs.name=="boolVal")
+    return "boolVal" if (lhs.name=="boolVal" and rhs.name=="boolVal")
     abort "Error: tipos no compatible para la operacion :[#{lhs.name}] [#{rhs.name}]. #{rhs.noLine}:#{rhs.noColumn} " 
   end
 

@@ -65,6 +65,17 @@
 
      var asd:real=45+78.12*234+56;
      var asd2:num=7;
+     var b1:bool=true;
+     var b2:bool=false ||true && b1;
+
+     if b1==true :>
+        asd=123.43;
+        b2=false;
+    nif:>
+        asd=0;
+        b2=true;   
+    ;;
+
 
 #      #declarar variable;
 # def variable:int=123;

@@ -35,7 +35,7 @@ class PostFix
      i=0
     for t in tokens
     #puts t
-      if (t.name=="num" or t.name=="real") or t.name=="identificador" or t.name=="string" 
+      if (t.name=="num" or t.name=="real") or t.name=="identificador" or t.name=="string" or t.name=="boolVal"
         sumVar+=1
         out.push t
       elsif t.val == "("

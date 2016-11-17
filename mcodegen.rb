@@ -55,6 +55,8 @@ class MCodeGen
         print_pfix array , node[1]
         puts 
     end
+
+    
     def print_pfix tokens , resultToken
         i=0
         File.open("./ejemplos/main.m","a") do |f|

@@ -182,7 +182,8 @@ class Gram
     Gram.new( "bloque", "inicioBloque instrucciones? terminacion  "),
     Gram.new( "declaraciones","declaracion declaraciones?"),
     Gram.new( "declaracion","definicion identificador inicio tipoDato opAsignacion"),#asignacion obligada
-    Gram.new( "operacion","valor (oprMat operacion)?"),
+    Gram.new( "operacion","valor (operador operacion)?"),
+    Gram.new( "operador"," (oprMat|oprLog)"),
     Gram.new( "valor","(identificador|llamadoFn|literal|grpOp)"),
     Gram.new( "grpOp","parIni operacion parFin"),
     Gram.new( "literal","(string|real|num|boolVal)"),
