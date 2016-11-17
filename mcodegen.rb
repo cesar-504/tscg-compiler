@@ -9,6 +9,7 @@ class MCodeGen
     end
 
     def genFile 
+        File.open("./ejemplos/main.m","w") do |f| 
         
             @tree.each do |item|  
                 begin
@@ -18,10 +19,13 @@ class MCodeGen
                 end
                
             
-            #@fIni.each { |i|  f.puts  i }
-            #@fEnd.reverse_each{ |i|  f.puts  i }
-
+               
             
+            
+
+            end
+            @fIni.each { |i|  f.puts  i }
+            @fEnd.reverse_each{ |i|  f.puts  i }
       end
         
     end
@@ -33,6 +37,7 @@ class MCodeGen
     end
 
     def pr_mainBloque node
+        
         @fIni<<"mainBloque:"
         @fEnd<<"mainBloque end"
     end
@@ -54,13 +59,13 @@ class MCodeGen
         i=0
         File.open("./ejemplos/main.m","a") do |f|
             if tokens.count==1
-                f.puts "#{resultToken.content.val} = #{tokens[0].val}"
+                @fIni<< "#{resultToken.content.val} = #{tokens[0].val}"
                 return
             end
             while i<tokens.count
                 case tokens[i].val 
                 when "+","*","-",">","<",">=","<=","==","!=","&&","||"
-                    f.puts "t_#{@t} =  #{tokens[i-2].val} #{tokens[i].val} #{tokens[i-1].val}"
+                    @fIni<< "t_#{@t} =  #{tokens[i-2].val} #{tokens[i].val} #{tokens[i-1].val}"
                     
                     tokens.delete_at(i-2)
                     tokens.delete_at(i-2)
@@ -70,7 +75,7 @@ class MCodeGen
                 end
                 i+=1
             end
-                f.puts "#{resultToken.content.val} = t_#{@t-1}" 
+                @fIni<< "#{resultToken.content.val} = t_#{@t-1}" 
             
                 
             
