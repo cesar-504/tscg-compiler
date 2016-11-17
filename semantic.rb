@@ -107,5 +107,7 @@ class Semantic
     sim.ctype=node[3].content.val
     @tableStack[@contextIndex].add_symbol sim
   end
+  
+  
     
 end

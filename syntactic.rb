@@ -4,6 +4,7 @@ require_relative 'token'
 require_relative 'sym-table'
 require_relative 'postfix'
 require_relative 'semantic'
+require_relative 'mcodegen'
 require 'tree'
 
 class Object
@@ -49,6 +50,7 @@ class Syntactic
     @lastError=nil
     @treeIndex=0
     @sem=Semantic.new @tableStack
+    @mcg=MCodeGen.new @syntaxTree
   end
 
 
@@ -111,6 +113,10 @@ class Syntactic
       @currentNode=lastNode
      r= check_gram Gram.gram('archivo')
      @syntaxTree.print_tree
+     File.open("./ejemplos/main.json","w") do |f|
+       f.write(@syntaxTree.to_json)
+      end
+      @mcg.genFile
      return true if !r.error
      puts "Error se esperaba [#{@lastProd.name}] pero se recibio [#{@lastAcceptedToken.name}]. #{@lastAcceptedToken.noLine}:#{@lastAcceptedToken.noColumn}  "
      puts "errorStack"
@@ -219,7 +225,7 @@ class Syntactic
     @tableStack.pop
     #@currentNode=@currentNode.parent
   end
-  
+
   def print_token(token,nline=false)
 
       print token.name+ " "

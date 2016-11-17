@@ -63,7 +63,7 @@
  main:>
 
 
-     var asd:real=45+78.12;
+     var asd:real=45+78.12*234+56;
      var asd2:num=7;
 
 #      #declarar variable;

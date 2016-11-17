@@ -69,7 +69,7 @@ class PostFix
     if sumOp!=sumVar-1 or (sumOp==0 and sumVar==0)
        abort "error: numero de operadores y operandos no corresponde. "
     elsif !error
-      
+      stack.reverse.each{ |op| out.push op }
       return out
     end
     end
