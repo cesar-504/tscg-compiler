@@ -67,7 +67,7 @@
      var asd2:num=7;
      var b1:bool=true;
      var b2:bool=false ||true && b1;
-
+     asd=342;
      if b1==true :>
         asd=123.43;
         b2=false;
@@ -75,7 +75,9 @@
         asd=0;
         b2=true;   
     ;;
-
+    cloop b1 :>
+        asd=asd+1;
+    ;;
 
 #      #declarar variable;
 # def variable:int=123;

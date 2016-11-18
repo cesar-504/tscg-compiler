@@ -7,11 +7,20 @@ class MCodeGen
         @t=0
         
     end
-
+    def nextNode
+        @tree.each do |item|
+            if item.children.count==0 
+                n= item.dclone
+                p=item.parent
+                p.remove!(item)
+                return n
+            end
+        end    
+    end    
     def genFile 
         File.open("./ejemplos/main.m","w") do |f| 
         
-            @tree.each do |item|  
+            @tree.postordered_each do |item|
                 begin
                     
                     send "pr_"+item.name[/ .+ /].to_s.strip,item
@@ -23,7 +32,7 @@ class MCodeGen
             
             
 
-            end
+            end 
             @fIni.each { |i|  f.puts  i }
             @fEnd.reverse_each{ |i|  f.puts  i }
       end
@@ -47,7 +56,7 @@ class MCodeGen
     end
     def pr_declaracion node
         array = node_to_array  node[4]
-       
+        puts
         array.shift
         result=nil
     
@@ -56,8 +65,58 @@ class MCodeGen
         puts 
     end
 
+    def pr_estPregunta node
+        array =PostFix.infix_to_posfix node_to_array(node.children[1])
+        var= print_pfix array
+        @fIni<< "if #{var}==false goto nif#{@t}"
+        @fEnd<< "end_if#{@t}"
+
+    end
+    def pr_estNif node
+        @fIni<<"goto end_if#{@t}"
+        @fIni<< "nif#{@t}:"
+        
+        puts
+    end
+    def pr_asignar node
+        puts node.children
+        array = node_to_array  node[1]
+        puts array
+        array.shift
+        result=nil
     
-    def print_pfix tokens , resultToken
+        array = PostFix.infix_to_posfix  array 
+        print_pfix array , node[0]
+        puts
+    end
+    def pr_estCloop node
+        array =PostFix.infix_to_posfix node_to_array(node.children[1])
+        var= print_pfix array
+        @fIni<<var
+        @fIni<<"cloop#{@t}: /////////"
+
+    end
+    
+
+    def instrucciones_to_array node
+        i=0
+        tmp = node
+        array=[]
+        puts tmp[i]
+        while i<tmp.children.count
+            if tmp.children[i].name[/ .+ /].to_s.strip == "instruccion"
+                array<<tmp.children[i] 
+                i+=1
+            elsif tmp.children[i].name[/ .+ /].to_s.strip == "instrucciones"
+                tmp=tmp.children[i]
+                i==0
+            end 
+        end
+        array
+    end
+
+    
+    def print_pfix tokens , resultToken=nil
         i=0
         File.open("./ejemplos/main.m","a") do |f|
             if tokens.count==1
@@ -77,11 +136,11 @@ class MCodeGen
                 end
                 i+=1
             end
+            if resultToken
                 @fIni<< "#{resultToken.content.val} = t_#{@t-1}" 
-            
-                
-            
-            puts
+                return resultToken
+            end
+            "t_#{@t-1}"
         end
     end
 
