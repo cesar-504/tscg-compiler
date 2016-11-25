@@ -1,3 +1,6 @@
+class Tree::TreeNode
+    attr_accessor :fIni,:fEnd
+end
 class MCodeGen
     def initialize tree
         @tree=tree
@@ -5,6 +8,7 @@ class MCodeGen
         @fEnd=[]
         @t=0
         @nextNode=nil
+        @currentNode=nil
 
     end
     def correctNode? node
@@ -12,46 +16,48 @@ class MCodeGen
         true
     end
 
-<<<<<<< HEAD
-  
-    def genFile 
-        File.open("./ejemplos/main.m","w") do |f| 
-        
-=======
+
 
     def genFile
         File.open("./ejemplos/main.m","w") do |f|
 
->>>>>>> 57db2786fe4ecc2cf1eb3fdd40d5c8e46fa82f51
-            @tree.each do |item|
+            @tree.postordered_each do |item|
                 puts item.name
                 begin
-
+                    item.fIni=[]
+                    item.fEnd=[]
+                    @currentNode=item
                     send "pr_"+item.name[/ .+ /].to_s.strip,item
                 rescue NoMethodError
                 end
-<<<<<<< HEAD
-               
-            
-               
-            
-            
- 
-=======
 
-
-
-
-
-
->>>>>>> 57db2786fe4ecc2cf1eb3fdd40d5c8e46fa82f51
             end
-            @fIni.each { |i|  f.puts  i }
-            @fEnd.reverse_each{ |i|  f.puts  i }
+            @tree.each do |item|
+                item.fIni.each { |e| f.puts e } if item.fIni
+                #f.puts item.fEnd if item.fEnd
+
+            end
+            @tree.postordered_each do |item|
+                #f.puts item.fIni if item.fIni
+                item.fEnd.reverse_each { |e| f.puts e } if item.fEnd
+
+            end
+            #@fIni.each { |i|  f.puts  i }
+           # @fEnd.reverse_each{ |i|  f.puts  i }
       end
 
     end
-
+    def print_tree n
+            File.open("./ejemplos/main.m","a") do |f|
+                n.fIni.each { |e| f.puts e } if n.fIni
+                    if n.children.count>0
+                    for item in n.children
+                        print_tree item
+                    end
+                    end
+            # f.puts n.fEnd
+            end
+    end
     def node_to_array node
         array=[]
         node.each { |n| array<< n.content if n.children.count==0 }
@@ -60,8 +66,8 @@ class MCodeGen
 
     def pr_mainBloque node
 
-        @fIni<<"mainBloque:"
-        @fEnd<<"mainBloque end"
+        @currentNode.fIni<<"mainBloque:"
+        @currentNode.fEnd<<"mainBloque end"
        #@fIni.unshift "mainBloque:"
        #@fIni << "mainBloque end"
     end
@@ -94,7 +100,7 @@ class MCodeGen
         when "string"
           dec+="16"
         end
-        @fIni<<dec
+        @currentNode.fIni<<dec
         print_pfix array , node[1]
         puts
     end
@@ -102,13 +108,13 @@ class MCodeGen
     def pr_estPregunta node
         array =PostFix.infix_to_posfix node_to_array(node.children[1])
         var= print_pfix array
-        @fIni<< "if #{var}==false goto nif#{@t}"
-        @fEnd<< "end_if#{@t}"
+        @currentNode.fIni<< "if #{var}==false goto nif#{@t}"
+        @currentNode.fEnd<< "end_if#{@t}:"
 
     end
     def pr_estNif node
-        @fIni<<"goto end_if#{@t}"
-        @fIni<< "nif#{@t}:"
+        @currentNode.fIni<<"goto end_if#{@t}"
+        @currentNode.fIni<< "nif#{@t}:"
 
         puts
     end
@@ -126,14 +132,10 @@ class MCodeGen
     def pr_estCloop node
         array =PostFix.infix_to_posfix node_to_array(node.children[1])
         var= print_pfix array
-        @fIni<<var
-<<<<<<< HEAD
-        @fIni<<"cloop#{@t}: /////////"
-=======
-        @fIni<<"cloop#{@t}:"
->>>>>>> 57db2786fe4ecc2cf1eb3fdd40d5c8e46fa82f51
-        @fIni<< "if #{var}==false goto end_cloop#{@t}"
-        @fEnd<<"end_cloop#{@t}"
+        @currentNode.fIni<<var
+        @currentNode.fIni<<"cloop#{@t}:"
+        @currentNode.fIni<< "if #{var}==false goto end_cloop#{@t}"
+        @currentNode.fEnd<<"end_cloop#{@t}:"
         @t+=1
     end
 
@@ -162,16 +164,9 @@ class MCodeGen
 
             if tokens.count==1
                 if resultToken
-<<<<<<< HEAD
-                    @fIni<< "#{resultToken.content.val} = #{tokens[0].val}"
+                    @currentNode.fIni<< "#{resultToken.content.val} = #{tokens[0].val}"
                 else
-=======
-
-                    @fIni<< "#{resultToken.content.val} = #{tokens[0].val}"
-                else
-
->>>>>>> 57db2786fe4ecc2cf1eb3fdd40d5c8e46fa82f51
-                    @fIni<< "t_#{@t} = #{tokens[0].val}"
+                    @currentNode.fIni<< "t_#{@t} = #{tokens[0].val}"
                     @t+=1
                     return "t_#{@t}"
                 end
@@ -180,8 +175,8 @@ class MCodeGen
             while i<tokens.count
                 case tokens[i].val
                 when "+","*","-",">","<",">=","<=","==","!=","&&","||"
-                    @fIni<<"s"
-                    @fIni<< "t_#{@t} =  #{tokens[i-2].val} #{tokens[i].val} #{tokens[i-1].val}"
+                    ####
+                    @currentNode.fIni<< "t_#{@t} =  #{tokens[i-2].val} #{tokens[i].val} #{tokens[i-1].val}"
 
                     tokens.delete_at(i-2)
                     tokens.delete_at(i-2)
@@ -192,7 +187,7 @@ class MCodeGen
                 i+=1
             end
             if resultToken
-                @fIni<< "#{resultToken.content.val} = t_#{@t-1}"
+                @currentNode.fIni<< "#{resultToken.content.val} = t_#{@t-1}"
                 return resultToken
             end
             "t_#{@t-1}"
