@@ -73,9 +73,9 @@
         b2=false;
     nif:>
         asd=0;
-        b2=true;   
+        b2=true;
     ;;
-    cloop b1 :>
+    cloop b1==true :>
         asd=asd+1;
     ;;
 
